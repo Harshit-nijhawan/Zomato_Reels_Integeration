@@ -3,6 +3,17 @@ const foodPartnerModel = require("../models/foodpartner.model")
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+// helper to set token cookie consistently
+function setTokenCookie(res, token) {
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // true in production (HTTPS)
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // none+secure for cross-site in prod
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+  }
+  res.cookie("token", token, cookieOptions)
+}
+
 async function registerUser(req, res) {
 
     const { fullName, email, password } = req.body;
@@ -26,11 +37,8 @@ async function registerUser(req, res) {
         password: hashedPassword
     })
 
-    const token = jwt.sign({
-        id: user._id,
-    }, process.env.JWT_SECRET)
-
-    res.cookie("token", token)
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
+    setTokenCookie(res, token)
 
     res.status(201).json({
         message: "User registered successfully",
@@ -65,11 +73,8 @@ async function loginUser(req, res) {
         })
     }
 
-    const token = jwt.sign({
-        id: user._id,
-    }, process.env.JWT_SECRET)
-
-    res.cookie("token", token)
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
+    setTokenCookie(res, token)
 
     res.status(200).json({
         message: "User logged in successfully",
@@ -114,11 +119,8 @@ async function registerFoodPartner(req, res) {
         contactName
     })
 
-    const token = jwt.sign({
-        id: foodPartner._id,
-    }, process.env.JWT_SECRET)
-
-    res.cookie("token", token)
+    const token = jwt.sign({ id: foodPartner._id }, process.env.JWT_SECRET)
+    setTokenCookie(res, token)
 
     res.status(201).json({
         message: "Food partner registered successfully",
@@ -156,11 +158,8 @@ async function loginFoodPartner(req, res) {
         })
     }
 
-    const token = jwt.sign({
-        id: foodPartner._id,
-    }, process.env.JWT_SECRET)
-
-    res.cookie("token", token)
+    const token = jwt.sign({ id: foodPartner._id }, process.env.JWT_SECRET)
+    setTokenCookie(res, token)
 
     res.status(200).json({
         message: "Food partner logged in successfully",

@@ -2,67 +2,62 @@ const foodPartnerModel = require("../models/foodpartner.model")
 const userModel = require("../models/user.model")
 const jwt = require("jsonwebtoken");
 
-
 async function authFoodPartnerMiddleware(req, res, next) {
 
-    const token = req.cookies.token;
+    const token = req.cookies?.token;
 
     if (!token) {
-        return res.status(401).json({
-            message: "Please login first"
-        })
+        return res.status(401).json({ message: "Please login first" });
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        if (!decoded || !decoded.id) {
+            return res.status(401).json({ message: "Invalid token payload" });
+        }
 
         const foodPartner = await foodPartnerModel.findById(decoded.id);
 
-        req.foodPartner = foodPartner
-
-        if (!req.foodPartner) {
+        if (!foodPartner) {
             return res.status(401).json({ message: "Unauthorized: Food partner not found" });
         }
 
-        next()
+        req.foodPartner = foodPartner;
+        next();
 
     } catch (err) {
-
-        return res.status(401).json({
-            message: "Invalid token"
-        })
-
+        return res.status(401).json({ message: "Invalid or expired token" });
     }
-
 }
 
 async function authUserMiddleware(req, res, next) {
 
-    const token = req.cookies.token;
+    const token = req.cookies?.token;
 
     if (!token) {
-        return res.status(401).json({
-            message: "Please login first"
-        })
+        return res.status(401).json({ message: "Please login first" });
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        if (!decoded || !decoded.id) {
+            return res.status(401).json({ message: "Invalid token payload" });
+        }
 
         const user = await userModel.findById(decoded.id);
 
-        req.user = user
+        if (!user) {
+            return res.status(401).json({ message: "Unauthorized: User not found" });
+        }
 
-        next()
+        req.user = user;
+        next();
 
     } catch (err) {
-
-        return res.status(401).json({
-            message: "Invalid token"
-        })
-
+        return res.status(401).json({ message: "Invalid or expired token" });
     }
-
 }
 
 module.exports = {

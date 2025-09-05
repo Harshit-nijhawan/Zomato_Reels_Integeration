@@ -1,124 +1,116 @@
 /* Shared Auth Form Styles */
 @import './theme.css';
 
-.auth-page-wrapper {
-  min-height: 100dvh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-8) var(--space-4);
-  background: radial-gradient(circle at 30% 20%, var(--color-surface-alt) 0%, var(--color-bg) 60%);
-  background-attachment: fixed;
+.auth-page-wrapper{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px 16px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
 }
 
-@media (prefers-color-scheme: dark) {
-  .auth-page-wrapper {
-    background: radial-gradient(circle at 70% 60%, var(--color-surface-alt) 0%, var(--color-bg) 65%);
-  }
+/* ensure card box doesn't overflow and inner elements respect container */
+.auth-card{
+  width:100%;
+  max-width:420px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border-radius:var(--radius);
+  padding:28px;
+  box-shadow:var(--shadow);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(8px) saturate(120%);
+  overflow:hidden; /* prevent children escaping the card */
 }
 
-.auth-card {
-  width: 100%;
-  max-width: 420px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  padding: var(--space-6) var(--space-6) var(--space-5);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
+.auth-title{
+  margin:0 0 6px 0;
+  font-size:20px;
+  font-weight:700;
+  color:var(--text);
 }
 
-.auth-card header { text-align: center; }
-
-.auth-title {
-  font-size: 1.45rem;
-  font-weight: 600;
-  letter-spacing: .5px;
-  margin-bottom: var(--space-2);
+.auth-subtitle{
+  margin:0 0 18px 0;
+  color:var(--muted);
+  font-size:13px;
 }
 
-.auth-subtitle {
-  font-size: .85rem;
-  color: var(--color-text-secondary);
+.auth-form{display:flex;flex-direction:column;gap:12px}
+.field-group{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field-group label{font-size:13px;color:var(--muted)}
+.field-group input,
+.field-group textarea{
+  width:100%;           /* ensure inputs don't exceed parent */
+  min-width:0;          /* important for flex children in two-col */
+  box-sizing:border-box;
+  background:transparent;
+  border:1px solid rgba(255,255,255,0.04);
+  padding:10px 12px;
+  border-radius:8px;
+  color:var(--text);
+  outline:none;
+  transition:box-shadow .16s, border-color .12s, transform .12s;
+  font-size:14px;
+}
+.field-group input:focus,
+.field-group textarea:focus{
+  border-color: rgba(255,90,95,0.95);
+  box-shadow: 0 6px 18px rgba(255,90,95,0.07);
+  transform:translateY(-1px);
 }
 
-form.auth-form { display: flex; flex-direction: column; gap: var(--space-4); }
+.auth-submit{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:10px 12px;
+  background:linear-gradient(90deg,var(--accent),var(--accent-2));
+  color:white;
+  border-radius:10px;
+  font-weight:600;
+  border:none;
+  cursor:pointer;
+  text-decoration:none;
+  transition:transform .12s, box-shadow .12s, opacity .12s;
+  box-shadow: 0 8px 28px rgba(255,90,95,0.12);
+  width:100%;           /* make register links fill card width */
+  text-align:center;
+  box-sizing:border-box;
+}
+.auth-submit:hover{ transform: translateY(-3px); box-shadow:0 12px 40px rgba(255,90,95,0.14) }
+.auth-submit[disabled]{ opacity:.6; cursor:not-allowed }
 
-.field-group { display: flex; flex-direction: column; gap: 4px; }
-
-.field-group label {
-  font-size: .75rem;
-  text-transform: uppercase;
-  letter-spacing: .07em;
-  font-weight: 600;
-  color: var(--color-text-secondary);
+/* two-col should wrap on small screens */
+.two-col{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;       /* allow wrapping to new line */
+}
+.two-col .field-group{
+  flex:1 1 0;           /* allow shrinking */
+  min-width:0;          /* avoid overflow in firefox/webkit */
 }
 
-.field-group input {
-  appearance: none;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface-alt);
-  padding: 10px 12px;
-  font: inherit;
-  border-radius: var(--radius-sm);
-  outline: none;
-  color: var(--color-text);
-  transition: border-color var(--transition-base), background var(--transition-base), box-shadow var(--transition-base);
-  width: 100%;
-  min-width: 0; /* allow shrinking inside flex parent */
+/* alt action */
+.auth-alt-action{
+  margin-top:12px;
+  color:var(--muted);
+  font-size:13px;
+  text-align:center;
+}
+.auth-alt-action a{color:var(--accent); text-decoration:underline; text-underline-offset:3px}
+
+/* if there are multiple action buttons stacked make them visually separate */
+.auth-page-wrapper .auth-card > div > .auth-submit + .auth-submit {
+  margin-top:8px;
 }
 
-.field-group input:focus-visible {
-  border-color: var(--color-accent);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 55%, transparent);
-  background: var(--color-surface);
+/* small-screen tweaks */
+@media (max-width:520px){
+  .auth-card{padding:18px}
+  .auth-title{font-size:18px}
+  .two-col{gap:10px}
+  .auth-submit{padding:12px}
 }
-
-.two-col { display: flex; gap: var(--space-4); }
-.two-col .field-group { flex: 1 1 0; min-width: 0; }
-
-button.auth-submit {
-  margin-top: var(--space-2);
-  background: var(--color-accent);
-  color: #fff;
-  border: none;
-  padding: 12px 16px;
-  font: inherit;
-  font-weight: 600;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  letter-spacing: .5px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  transition: background var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
-}
-
-button.auth-submit:hover { background: var(--color-accent-hover); }
-button.auth-submit:active { transform: translateY(1px); }
-button.auth-submit:focus-visible { outline: 2px solid var(--color-accent-hover); outline-offset: 2px; }
-
-.auth-alt-action {
-  text-align: center;
-  font-size: .85rem;
-  color: var(--color-text-secondary);
-}
-
-.auth-alt-action a { font-weight: 600; }
-
-.small-note { font-size: .7rem; color: var(--color-text-secondary); line-height: 1.2; }
-
-/* Utility for spacing adjustments */
-.gap-sm { gap: var(--space-2); }
-
-/* Responsive */
-@media (max-width: 480px) {
-  .auth-card { padding: var(--space-5) var(--space-5) var(--space-4); }
-  .two-col { flex-direction: column; }
-}
-
-/* Smooth transitions for theme change */
-body, .auth-card, .field-group input { transition: background 200ms ease, color 200ms ease, border-color 200ms ease; }

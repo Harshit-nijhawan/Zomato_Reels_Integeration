@@ -1,4 +1,4 @@
-import React, { useState, useEffect, use } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import '../../styles/profile.css'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
@@ -16,6 +16,32 @@ const Profile = () => {
             })
     }, [ id ])
 
+    const videoRefs = useRef({})
+    const [playingId, setPlayingId] = useState(null)
+
+    const togglePlay = (id) => {
+        const vid = videoRefs.current[id]
+        if (!vid) return
+
+        // pause all others
+        Object.entries(videoRefs.current).forEach(([k, v]) => {
+            if (k !== id && v && !v.paused) {
+                v.pause()
+                v.muted = true
+            }
+        })
+
+        if (vid.paused) {
+            // unmute when user explicitly plays
+            try { vid.muted = false } catch (e) { /* noop */ }
+            vid.play().catch(() => { /* autoplay may fail */ })
+            setPlayingId(id)
+        } else {
+            vid.pause()
+            try { vid.muted = true } catch (e) {}
+            setPlayingId(null)
+        }
+    }
 
     return (
         <main className="profile-page">
@@ -50,16 +76,27 @@ const Profile = () => {
 
             <section className="profile-grid" aria-label="Videos">
                 {videos.map((v) => (
-                    <div key={v._id} className="profile-grid-item">
-                        {/* Placeholder tile; replace with <video> or <img> as needed */}
-
-
+                    <div
+                        key={v._id}
+                        className="profile-grid-item"
+                        onClick={() => togglePlay(v._id)}
+                        role="button"
+                        aria-label={playingId === v._id ? "Pause video" : "Play video"}
+                        tabIndex={0}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePlay(v._id) } }}
+                    >
                         <video
+                            ref={(el) => { videoRefs.current[v._id] = el }}
                             className="profile-grid-video"
                             style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                            src={v.video} muted ></video>
-
-
+                            src={v.video}
+                            muted
+                            playsInline
+                            preload="metadata"
+                        />
+                        <div className="play-icon" aria-hidden="true">
+                            {playingId === v._id ? '⏸' : '▶'}
+                        </div>
                     </div>
                 ))}
             </section>
