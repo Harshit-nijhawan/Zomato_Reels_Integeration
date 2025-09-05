@@ -37,7 +37,7 @@ const FoodPartnerLogin = () => {
         <form className="auth-form" onSubmit={handleSubmit} noValidate>
           <div className="field-group">
             <label htmlFor="email">Email</label>
-            <input id="email" name="email" type="email" placeholder="business@example.com" autoComplete="email" />
+            <input id="email" name="email" type="email" placeholder="YourBusiness@example.com" autoComplete="email" />
           </div>
           <div className="field-group">
             <label htmlFor="password">Password</label>
