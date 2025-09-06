@@ -13,7 +13,6 @@ import Profile from '../pages/food-partner/Profile';
 
 const AppRoutes = () => {
     return (
-        <Router>
             <Routes>
                 <Route path="/register" element={<ChooseRegister />} />
                 <Route path="/user/register" element={<UserRegister />} />
@@ -25,8 +24,7 @@ const AppRoutes = () => {
                 <Route path="/create-food" element={<CreateFood />} />
                 <Route path="/food-partner/:id" element={<Profile />} />
             </Routes>
-        </Router>
-    )
+    );
 }
 
 export default AppRoutes
