@@ -18,7 +18,7 @@ router.post('/',
 
 
 /* GET /api/food/ [protected] */
-router.get("/",
+router.get('/',
     foodController.getFoodItems)
 
 
