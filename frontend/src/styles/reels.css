@@ -4,11 +4,11 @@
 :root{
   --reel-bg: rgba(3,7,18,0.45);
   --glass: rgba(255,255,255,0.04);
-  --muted: rgba(255,255,255,0.72);
+  --muted: rgba(255,255,255,0.82);
   --accent: #ff5a5f;
   --accent-2: #ff8a65;
-  --action-size: 54px;
-  --action-gap: 14px;
+  --action-size: 56px;
+  --action-gap: 12px;
   --reel-radius: 14px;
 }
 
@@ -30,6 +30,7 @@
   overflow:auto;
   scroll-snap-type: y mandatory;
   -webkit-overflow-scrolling: touch;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Each reel takes a viewport height (snap to it) */
@@ -53,8 +54,9 @@
   height:100%;
   object-fit:cover;
   transform-origin:center;
-  transition:transform .6s ease;
+  transition:transform .6s ease, filter .36s ease;
   will-change: transform;
+  filter: contrast(1.02) saturate(1.02);
 }
 
 /* subtle scale on hover for pointer devices */
@@ -76,22 +78,22 @@
   justify-content:flex-end;
 }
 
-/* top gradient to improve contrast for top-left content */
+/* top gradient - lighter so video stays visible */
 .reel-overlay::before{
   content:'';
   position:absolute;
   inset:0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.0) 40%);
+  background: linear-gradient(180deg, rgba(0,0,0,0.22) 0%, rgba(0,0,0,0.0) 40%);
   z-index:8;
   pointer-events:none;
 }
 
-/* bottom gradient for text readability */
+/* bottom gradient for text readability (lighter) */
 .reel-overlay-gradient{
   position:absolute;
   left:0;right:0;bottom:0;
-  height:42%;
-  background: linear-gradient(0deg, rgba(0,0,0,0.6), rgba(0,0,0,0.18) 30%, rgba(0,0,0,0.0) 70%);
+  height:46%;
+  background: linear-gradient(0deg, rgba(0,0,0,0.5), rgba(0,0,0,0.14) 30%, rgba(0,0,0,0.0) 70%);
   z-index:9;
   pointer-events:none;
 }
@@ -100,7 +102,7 @@
 .reel-actions{
   position:absolute;
   right:12px;
-  bottom:110px;
+  bottom:150px; /* push actions slightly upward for better clarity */
   z-index:22;
   display:flex;
   flex-direction:column;
@@ -131,14 +133,17 @@
   display:inline-flex;
   align-items:center;
   justify-content:center;
-  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
   border: 1px solid rgba(255,255,255,0.06);
   color: white;
   cursor:pointer;
-  transition: transform .12s ease, box-shadow .12s ease, background .12s;
+  transition: transform .12s ease, box-shadow .12s ease, background .12s, color .12s;
   box-shadow: 0 6px 18px rgba(2,6,23,0.5);
   backdrop-filter: blur(6px) saturate(120%);
 }
+
+/* SVG icon sizing inside action */
+.reel-action svg { width:22px; height:22px; display:block; }
 
 /* hover / active */
 @media (hover: hover){
@@ -150,20 +155,41 @@
 .reel-action__count{
   color:var(--muted);
   font-size:13px;
-  margin-top:2px;
+  margin-top:6px;
+}
+
+/* liked / saved states - visual emphasis */
+.reel-action.liked,
+.reel-action.saved{
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  color: #fff;
+  border-color: rgba(255,90,95,0.15);
+  box-shadow: 0 14px 36px rgba(255,90,95,0.14);
+}
+.reel-action.liked svg,
+.reel-action.saved svg{ filter: drop-shadow(0 6px 18px rgba(255,90,95,0.12)); }
+.reel-action.liked + .reel-action__count,
+.reel-action.saved + .reel-action__count{
+  color: var(--accent);
+  font-weight:700;
+}
+
+/* subtle icon pulse when toggled */
+.reel-action.toggle-anim{
+  animation: heart-pop .34s cubic-bezier(.2,.9,.35,1);
 }
 
 /* description + CTA area bottom-left */
 .reel-content{
   position:absolute;
   left:16px;
-  bottom:22px;
-  z-index:21;
+  bottom:92px; /* raised so CTA sits above bottom-nav */
+  z-index:25;   /* higher so CTA is clickable above bottom nav */
   pointer-events:auto;
   max-width:70%;
   display:flex;
   flex-direction:column;
-  gap:10px;
+  gap:12px;
 }
 
 /* description text with subtle fade & ellipsis */
@@ -181,21 +207,24 @@
   filter: drop-shadow(0 6px 18px rgba(0,0,0,0.7));
 }
 
-/* Visit store CTA styled like a pill */
+/* Visit store CTA styled like a pill - raised and clickable */
 .reel-btn{
   display:inline-block;
-  padding:8px 12px;
+  padding:10px 14px;
   background: linear-gradient(90deg,var(--accent),var(--accent-2));
   color:white;
   border-radius:999px;
   font-weight:700;
-  font-size:13px;
+  font-size:14px;
   text-decoration:none;
   border: none;
-  box-shadow: 0 8px 30px rgba(255,90,95,0.14);
-  transition: transform .12s ease, box-shadow .12s ease;
+  box-shadow: 0 12px 34px rgba(255,90,95,0.16);
+  transition: transform .12s ease, box-shadow .12s ease, opacity .12s;
+  pointer-events:auto;
+  z-index:26;
 }
 .reel-btn:hover{ transform: translateY(-4px) }
+.reel-btn:active{ transform: translateY(-1px) }
 
 /* bottom nav overlay (glass) to show home/saved */
 .reel-bottom-nav{
@@ -217,6 +246,30 @@
   pointer-events:auto;
 }
 
+/* align icon + label horizontally inside bottom nav items */
+.reel-bottom-nav a,
+.reel-bottom-nav button{
+  display:inline-flex;
+  flex-direction:row;
+  gap:8px;
+  align-items:center;
+  padding:8px 10px;
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-size:13px;
+  text-decoration:none;
+}
+.reel-bottom-nav a .icon,
+.reel-bottom-nav button .icon{ width:18px; height:18px; display:inline-block }
+
+/* emphasize active bottom nav item */
+.reel-bottom-nav a.active{
+  color:var(--accent);
+  font-weight:700;
+}
+
 /* empty state centered */
 .empty-state{
   height:100vh;
@@ -233,32 +286,27 @@
   50%{ transform: scale(1.35); opacity:1 }
   100%{ transform: scale(1); opacity:1 }
 }
-.reel-action.like:active svg,
-.reel-action.like:active{
-  animation: heart-pop .36s cubic-bezier(.2,.9,.35,1);
-  color: var(--accent);
-  background: linear-gradient(90deg,var(--accent),var(--accent-2));
-  box-shadow:0 12px 30px rgba(255,90,95,0.18);
-}
 
 /* mobile tweaks */
 @media (max-width:520px){
   .reels-feed{ max-width:100%; }
-  .reel-actions{ right:8px; bottom:120px; gap:10px }
-  .reel-content{ left:12px; bottom:18px; max-width:72% }
+  .reel-actions{ right:8px; bottom:140px; gap:10px }
+  .reel-content{ left:12px; bottom:110px; max-width:72% } /* maintain space for CTA above bottom-nav */
   .reel-btn{ padding:8px 10px; font-size:13px }
   .reel-action{ width:48px; height:48px; border-radius:12px; }
   .reel-action__count{ font-size:12px }
+  .reel-bottom-nav{ padding:6px 12px; gap:12px }
+  .reel-bottom-nav a{ font-size:12px }
 }
 
 /* support for light theme variables (if theme.css switches variables) */
 @media (prefers-color-scheme: light){
   .reel-action{
-    background: linear-gradient(180deg, rgba(0,0,0,0.06), rgba(0,0,0,0.02));
+    background: linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.88));
     color: #111;
     border:1px solid rgba(15,23,36,0.04);
     box-shadow: 0 6px 18px rgba(2,6,23,0.06);
   }
   .reel-description{ color: rgba(15,23,36,0.92) }
-  .reel-bottom-nav{ color: rgba(15,23,36,0.9); background: rgba(255,255,255,0.9); border:1px solid rgba(15,23,36,0.04) }
+  .reel-bottom-nav{ color: rgba(15,23,36,0.9); background: rgba(255,255,255,0.94); border:1px solid rgba(15,23,36,0.04) }
 }
