@@ -9,12 +9,27 @@ const Profile = () => {
     const [ videos, setVideos ] = useState([])
 
     useEffect(() => {
-        axios.get(`${import.meta.env.VITE_API_URL}/food-partner/${id}`, { withCredentials: true })
-            .then(response => {
-                setProfile(response.data.foodPartner)
-                setVideos(response.data.foodPartner.foodItems)
-            })
-    }, [ id ])
+    const token = localStorage.getItem("token") // Step A: get your JWT token
+
+    if (!token) { 
+        console.error("No token found. User may not be logged in.") // optional
+        return
+    }
+
+    axios.get(`${import.meta.env.VITE_API_URL}/food-partner/${id}`, {
+        headers: {
+            Authorization: `Bearer ${token}` // Step B: add the token in Authorization header
+        }
+    })
+    .then(response => {
+        setProfile(response.data.foodPartner)
+        setVideos(response.data.foodPartner.foodItems)
+    })
+    .catch(err => {
+        console.error("API error:", err.response?.data || err.message)
+    })
+}, [id])
+
 
     const videoRefs = useRef({})
     const [playingId, setPlayingId] = useState(null)
