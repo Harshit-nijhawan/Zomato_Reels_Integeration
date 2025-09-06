@@ -8,21 +8,33 @@ const UserLogin = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const email = e.target.email.value;
-    const password = e.target.password.value;
+  const email = e.target.email.value;
+  const password = e.target.password.value;
 
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/user/login`, {
-      email,
-      password
-    }, { withCredentials: true });
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/auth/user/login`,
+      { email, password },
+      { withCredentials: true } // keep if your backend uses cookies
+    );
 
     console.log(response.data);
 
-    navigate("/"); // Redirect to home after login
+    // STEP 1: Save the token in localStorage
+    // Adjust 'token' according to what your backend returns
+    localStorage.setItem("token", response.data.token);
 
-  };
+    // STEP 2: Redirect to home or profile page
+    navigate("/");
+
+  } catch (error) {
+    console.error("Login failed:", error.response?.data || error.message);
+    alert("Login failed. Check your credentials.");
+  }
+};
+
 
   return (
     <div className="auth-page-wrapper">

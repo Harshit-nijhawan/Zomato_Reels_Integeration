@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from 'react'
 import '../../styles/profile.css'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
+import { useNavigate } from 'react-router-dom';
+const navigate = useNavigate();
 
 const Profile = () => {
     const { id } = useParams()
@@ -11,10 +13,11 @@ const Profile = () => {
     useEffect(() => {
     const token = localStorage.getItem("token") // Step A: get your JWT token
 
-    if (!token) { 
-        console.error("No token found. User may not be logged in.") // optional
-        return
-    }
+    if (!token) {
+  navigate("/user/login"); // or "/food-partner/login" depending on context
+  console.error("No token found. User may not be logged in.");
+  return;
+}
 
     axios.get(`${import.meta.env.VITE_API_URL}/food-partner/${id}`, {
         headers: {

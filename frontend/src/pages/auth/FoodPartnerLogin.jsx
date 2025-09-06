@@ -7,25 +7,32 @@ const FoodPartnerLogin = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const email = e.target.email.value;
-    const password = e.target.password.value;
+  const email = e.target.email.value;
+  const password = e.target.password.value;
 
-    try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/auth/food-partner/login`,
-        { email, password },
-        { withCredentials: true } // ✅ sends cookie
-      );
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/auth/food-partner/login`,
+      { email, password },
+      { withCredentials: true } // only needed if backend uses cookies
+    );
 
-      console.log(response.data);
-      navigate("/create-food"); // redirect after successful login
-    } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || "Login failed.");
-    }
-  };
+    console.log(response.data);
+
+    // ✅ Save JWT in localStorage for authenticated requests
+    localStorage.setItem("token", response.data.token); // adjust key if backend uses another field
+
+    // Redirect after login
+    navigate("/create-food");
+
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || "Login failed.");
+  }
+};
+
 
   return (
     <div className="auth-page-wrapper">
