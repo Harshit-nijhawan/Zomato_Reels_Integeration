@@ -3,9 +3,10 @@ import '../../styles/profile.css'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom';
-const navigate = useNavigate();
+
 
 const Profile = () => {
+    const navigate = useNavigate();
     const { id } = useParams()
     const [ profile, setProfile ] = useState(null)
     const [ videos, setVideos ] = useState([])
